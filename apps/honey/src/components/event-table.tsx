@@ -1,5 +1,10 @@
+/**
+ * EventTable component displays a table of Honey transactions with details about minting and redemption events.
+ * It shows transaction type, value, involved tokens, transaction hash, and timestamp.
+ */
 "use client";
 
+import type { ReactNode } from "react";
 import { truncateHash, useTokens } from "@bera/berajs";
 import { blockExplorerUrl, honeyTokenAddress } from "@bera/config";
 import { type HoneyTxn } from "@bera/graphql";
@@ -17,7 +22,19 @@ import {
 import { formatDistance } from "date-fns";
 import { formatUnits, getAddress } from "viem";
 
-const getTokenDisplay = (event: HoneyTxn, tokenDictionary: any) => {
+interface TokenDictionary {
+  [key: string]: {
+    address: string;
+    decimals: number;
+  };
+}
+
+/**
+ * Renders the token display section showing the token conversion flow
+ * For Mint: Collateral -> Honey
+ * For Redemption: Honey -> Collateral
+ */
+const getTokenDisplay = (event: HoneyTxn, tokenDictionary: TokenDictionary): ReactNode => {
   const honey = tokenDictionary?.[getAddress(honeyTokenAddress)];
   const collateral1 =
     tokenDictionary?.[getAddress(event.collateral[0].collateral)];
@@ -158,16 +175,24 @@ const getTokenDisplay = (event: HoneyTxn, tokenDictionary: any) => {
   );
 };
 
-export const EventTable = ({
-  events,
-  isLoading,
-  arcade,
-}: {
-  // events: HoneyMint[] | HoneyRedemption[] ;
+/**
+ * Props for the EventTable component
+ */
+interface EventTableProps {
+  /** List of Honey transactions to display */
   events: HoneyTxn[];
-  isLoading: boolean | undefined;
+  /** Loading state indicator */
+  isLoading?: boolean;
+  /** Flag to indicate if this is an arcade view */
   arcade: boolean;
-}) => {
+}
+
+/**
+ * EventTable displays a table of Honey transactions with details about minting and redemption events.
+ * @param props - Component props
+ * @returns React component
+ */
+export const EventTable = ({ events, isLoading, arcade }: EventTableProps): ReactNode => {
   const { data: tokenData } = useTokens();
   return (
     <Table>
