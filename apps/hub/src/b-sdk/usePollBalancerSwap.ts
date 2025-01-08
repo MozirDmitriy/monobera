@@ -1,6 +1,8 @@
-import { SwapRequest, useBeraJs, type DefaultHookOptions } from "@bera/berajs";
+import type { SwapRequest, BeraConfig } from "@bera/berajs";
+import { useBeraJs } from "@bera/berajs";
+import type { DefaultHookOptions } from "@bera/types";
 import { beraTokenAddress, chainId } from "@bera/config";
-import { useDeadline } from "@bera/shared-ui";
+import { useDeadline, TRANSACTION_MODE } from "@bera/shared-ui";
 import {
   Address,
   MAX_UINT256,
@@ -17,7 +19,6 @@ import {
   TokenAmount,
   ZERO_ADDRESS,
 } from "@berachain-foundation/berancer-sdk";
-import { TRANSACTION_MODE } from "node_modules/@bera/shared-ui/src/settings";
 import useSWR from "swr";
 import { formatUnits } from "viem";
 import { usePublicClient } from "wagmi";
@@ -27,7 +28,9 @@ import { balancerApi, nativeToken } from "./b-sdk";
 
 type IUsePollSwapsArgs = SwapRequest;
 interface IUsePollSwapsOptions extends DefaultHookOptions {
-  isTyping?: boolean | undefined;
+  isTyping?: boolean;
+  beraConfigOverride?: BeraConfig;
+  opts?: Record<string, unknown>;
 }
 
 // NOTE: isLoading and error are injected by SWR so we dont need to define them here
